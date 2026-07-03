@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseSshUrl,
   looksLikeSshUrl,
+  splitSshUrlAndSession,
 } from "../src/relay/transport-ssh.ts";
 
 describe("parseSshUrl", () => {
@@ -106,5 +107,62 @@ describe("looksLikeSshUrl", () => {
   it("rejects non-string input gracefully (defensive against bad CLI args)", () => {
     expect(looksLikeSshUrl(null as unknown as string)).toBe(false);
     expect(looksLikeSshUrl(undefined as unknown as string)).toBe(false);
+  });
+});
+
+describe("splitSshUrlAndSession", () => {
+  it("returns authority-only URL unchanged when no path", () => {
+    expect(splitSshUrlAndSession("ssh://host")).toEqual({
+      authorityUrl: "ssh://host",
+    });
+    expect(splitSshUrlAndSession("ssh://me@host:2222")).toEqual({
+      authorityUrl: "ssh://me@host:2222",
+    });
+  });
+
+  it("splits the trailing session name off the path", () => {
+    expect(splitSshUrlAndSession("ssh://host/work")).toEqual({
+      authorityUrl: "ssh://host",
+      session: "work",
+    });
+    expect(splitSshUrlAndSession("ssh://me@host:2222/edit-42")).toEqual({
+      authorityUrl: "ssh://me@host:2222",
+      session: "edit-42",
+    });
+  });
+
+  it("treats a trailing empty path as 'no session'", () => {
+    // Matches how parseSshUrl already allows `ssh://host/` — cleanly
+    // ignored, no error.
+    expect(splitSshUrlAndSession("ssh://host/")).toEqual({
+      authorityUrl: "ssh://host",
+    });
+  });
+
+  it("rejects paths with more than one segment", () => {
+    // Silently dropping `bar` would surprise callers. Loud fail is
+    // safer than a wrong dispatch.
+    expect(() => splitSshUrlAndSession("ssh://host/foo/bar")).toThrow(
+      /single session name/,
+    );
+  });
+
+  it("rejects non-ssh URLs", () => {
+    expect(() => splitSshUrlAndSession("https://host/x")).toThrow(
+      /not an ssh URL/,
+    );
+    expect(() => splitSshUrlAndSession("label-only")).toThrow(/not an ssh URL/);
+  });
+
+  it("returns an authority URL that parseSshUrl accepts", () => {
+    // Round-trip: split → parse the authority. Guards against
+    // reintroducing a path when we reconstruct the URL.
+    const { authorityUrl } = splitSshUrlAndSession(
+      "ssh://me@host:2222/work",
+    );
+    expect(parseSshUrl(authorityUrl)).toEqual({
+      userHost: "me@host",
+      port: 2222,
+    });
   });
 });

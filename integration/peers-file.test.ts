@@ -274,4 +274,60 @@ describe("phase-2 ssh wiring — every subcommand routes through ssh", () => {
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("needs --session");
   });
+
+  // Fix B: ssh://user@host/session URLs. The pty TUI's attach-remote
+  // path hands us a URL of this shape (Nathan reported the "No known
+  // host" bug); the "URL is a complete address" mental model has to
+  // work from either side of the seam.
+  describe("ssh:// URL with session in the path", () => {
+    it("connect ssh://me@web1/work attaches by URL, resolved by authority", () => {
+      clearCallLog();
+      const result = runCli([
+        "connect",
+        "--config-dir",
+        configDir,
+        "ssh://me@web1/work",
+      ]);
+      expect(result.status).toBe(0);
+      expect(readCallLog()).toContain("me@web1 pty attach work");
+    });
+
+    it("connect ssh://me@web1 with no session errors helpfully", () => {
+      clearCallLog();
+      const result = runCli([
+        "connect",
+        "--config-dir",
+        configDir,
+        "ssh://me@web1",
+      ]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("needs a session name");
+    });
+
+    it("session in the URL AND --session is ambiguous", () => {
+      clearCallLog();
+      const result = runCli([
+        "connect",
+        "--config-dir",
+        configDir,
+        "ssh://me@web1/work",
+        "--session",
+        "other",
+      ]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("Ambiguous");
+    });
+
+    it("unregistered authority errors instead of falling through to a stale label branch", () => {
+      clearCallLog();
+      const result = runCli([
+        "connect",
+        "--config-dir",
+        configDir,
+        "ssh://unknown@nowhere/work",
+      ]);
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain("No known ssh peer");
+    });
+  });
 });
