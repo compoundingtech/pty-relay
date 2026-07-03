@@ -38,7 +38,9 @@ function usage(): void {
 Commands:
   init                      Initialize secret storage (first-time setup)
   reset                     Delete all saved credentials (start over)
-  ls                        List known hosts and their sessions
+  peers                     List known peers (terse — no session fanout)
+  peers --json              Emit JSON with source + kind per peer
+  ls                        List known peers and their sessions (fans out)
   ls --filter-tag k=v       Filter sessions by tag (repeatable, all must match)
   peek <host> <session>                        Print the current screen of a remote session
   peek --plain | --full                        Plain text (no ANSI) / full scrollback
@@ -55,10 +57,10 @@ Commands:
   events <host>                                Follow events from a remote daemon (Ctrl+C to stop)
   events --session <name> <host>               Filter to a single session
   events --json <host>                         Emit JSONL for scripting
-  rename <old> <new>        Rename a saved known-host entry
-  forget <host-label>       Remove a saved host
+  rename <old> <new>        Rename a saved peer
+  forget <peer-label>       Remove a saved peer
   add ssh://[user@]host[:port] [--label <name>]
-                            Add an ssh-reachable peer to known-hosts.
+                            Add an ssh-reachable peer.
                             Probes with ssh BatchMode=yes + pty
                             --version before saving so unreachable
                             peers don't get recorded.
@@ -354,6 +356,15 @@ async function main(): Promise<void> {
       break;
     }
 
+    case "peers": {
+      // Terse peer-only listing — no session fanout, no network probes.
+      // Complements `ls`, which is the fanout-and-probe view.
+      const configDir = getFlag("--config-dir") ?? undefined;
+      const { peers } = await import("./commands/peers.ts");
+      await peers(configDir, hasFlag("--json"), { passphraseFile });
+      break;
+    }
+
     case "peek": {
       // Flags can appear anywhere; positionals are the last two non-flag
       // tokens. Collect --wait (repeatable) and -t/--timeout while scanning.
@@ -607,8 +618,8 @@ async function main(): Promise<void> {
     case "forget": {
       const label = args[1];
       if (!label) {
-        console.error("Usage: pty-relay forget <host-label>");
-        console.error("  Run 'pty-relay ls' to see host labels.");
+        console.error("Usage: pty-relay forget <peer-label>");
+        console.error("  Run 'pty-relay peers' to see peer labels.");
         process.exit(1);
       }
       const configDir = getFlag("--config-dir") ?? undefined;
@@ -621,8 +632,8 @@ async function main(): Promise<void> {
       const before = await loadKnownHosts(store);
       const count = before.filter((h) => h.label === label).length;
       if (count === 0) {
-        console.error(`No known host with label "${label}".`);
-        console.error("  Run 'pty-relay ls' to see host labels.");
+        console.error(`No known peer with label "${label}".`);
+        console.error("  Run 'pty-relay peers' to see peer labels.");
         process.exit(1);
       }
       await removeKnownHost(label, store);
@@ -999,6 +1010,7 @@ Options:
 const CLIENT_PASSTHROUGH_COMMANDS = new Set([
   "ls",
   "list",
+  "peers",
   "connect",
   "peek",
   "send",
@@ -1086,11 +1098,12 @@ Subcommands:
   join --label <name>             Label this device advertises on the account
   join --totp-code <code>         Non-interactive TOTP code
 
-  ls                              List known hosts and their sessions
-  connect <host-or-url>           Attach to a remote pty session
-  peek <host> <session>           Print a remote session's screen
-  send <host> <session> "text"    Send input to a remote session
-  tag <host> <session>            Show / set tags on a remote session
+  peers                           List known peers (terse)
+  ls                              List known peers and their sessions
+  connect <peer-or-url>           Attach to a remote pty session
+  peek <peer> <session>           Print a remote session's screen
+  send <peer> <session> "text"    Send input to a remote session
+  tag <peer> <session>            Show / set tags on a remote session
   events <host>                   Follow events from a remote daemon
   rename <old> <new>              Rename a saved known-host entry
   forget <host-label>             Remove a saved host

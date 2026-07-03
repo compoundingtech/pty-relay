@@ -69,7 +69,7 @@ export async function resolveHost(
   if (!host) {
     log("hosts", "resolve miss", { label, known: hosts.length });
     throw new Error(
-      `No known host "${label}". Run \`pty-relay ls\` to list hosts.`
+      `No known peer "${label}". Run \`pty-relay peers\` to list peers.`
     );
   }
 
