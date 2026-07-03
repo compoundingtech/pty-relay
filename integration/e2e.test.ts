@@ -191,7 +191,7 @@ describe("spawn via self-hosted relay", () => {
 
     // Remote-spawn cwd is constrained to $HOME. Point the daemon's HOME at
     // a temp dir so the test can place a real subdirectory under it.
-    const fakeHome = fs.mkdtempSync(path.join("/tmp", "home-cwd-"));
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "home-cwd-"));
     const targetDir = path.join(fakeHome, "workdir");
     fs.mkdirSync(targetDir);
 
@@ -1489,7 +1489,7 @@ describe("credentials at rest", () => {
  */
 async function probeKeychainForE2E(): Promise<boolean> {
   const { KeychainStore } = await import("../src/storage/keychain-store.ts");
-  const probeDir = fs.mkdtempSync(path.join("/tmp", "e2e-kc-probe-"));
+  const probeDir = fs.mkdtempSync(path.join(os.tmpdir(), "e2e-kc-probe-"));
   try {
     const store = await KeychainStore.tryOpen(probeDir);
     if (!store) return false;
@@ -1809,7 +1809,7 @@ describe("reset command", () => {
  */
 const keychainResetAvailable = await (async () => {
   const { KeychainStore } = await import("../src/storage/keychain-store.ts");
-  const probeDir = fs.mkdtempSync(path.join("/tmp", "reset-kc-probe-"));
+  const probeDir = fs.mkdtempSync(path.join(os.tmpdir(), "reset-kc-probe-"));
   try {
     const store = await KeychainStore.tryOpen(probeDir);
     if (!store) return false;

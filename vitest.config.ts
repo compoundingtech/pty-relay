@@ -5,5 +5,6 @@ export default defineConfig({
     globals: true,
     exclude: ["integration/**", "node_modules/**"],
     setupFiles: ["./test/setup.ts"],
+    globalSetup: ["./test/setup/vitest-global.ts"],
   },
 });

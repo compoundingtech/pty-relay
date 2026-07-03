@@ -33,9 +33,10 @@ export interface TestContext {
 }
 
 export function createTestContext(): TestContext {
-  // Use /tmp directly instead of os.tmpdir() because macOS resolves tmpdir
-  // to /var/folders/... which is too long for Unix socket paths (104 char limit).
-  const stateDir = fs.mkdtempSync(path.join("/tmp", "pty-integ-"));
+  // Rely on os.tmpdir() — vitest globalSetup sets TMPDIR to /tmp/pv-XXX so
+  // socket paths stay short (macOS's raw /var/folders tmpdir would exceed
+  // AF_UNIX's 103-byte limit for daemon.sock nested underneath).
+  const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), "pty-integ-"));
   return { stateDir, cleanup: [] };
 }
 

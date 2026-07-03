@@ -12,6 +12,7 @@ import {
 import { getSession } from "@myobie/pty/client";
 import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 
 let ctx: TestContext;
@@ -131,7 +132,7 @@ describe("remote spawn default shape", () => {
     const relayConfigDir = path.join(ctx.stateDir, "relay");
     // Pin HOME + SHELL on the server side so we can assert on what the
     // daemon chose; in real usage these come from the operator's env.
-    const fakeHome = fs.mkdtempSync(path.join("/tmp", "home-spawn-"));
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "home-spawn-"));
     const { baseToken } = await startServerWithSpawn(relayConfigDir, port, {
       HOME: fakeHome,
       SHELL: "/bin/bash",
@@ -220,7 +221,7 @@ describe("spawn cwd containment to $HOME", () => {
     const relayConfigDir = path.join(ctx.stateDir, "relay");
 
     // Put HOME somewhere specific so /etc is unambiguously outside it.
-    const fakeHome = fs.mkdtempSync(path.join("/tmp", "home-"));
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "home-"));
     const { baseToken } = await startServerWithSpawn(relayConfigDir, port, {
       HOME: fakeHome,
     });
@@ -259,7 +260,7 @@ describe("spawn cwd containment to $HOME", () => {
     const port = getPort();
     const relayConfigDir = path.join(ctx.stateDir, "relay");
 
-    const fakeHome = fs.mkdtempSync(path.join("/tmp", "home-ok-"));
+    const fakeHome = fs.mkdtempSync(path.join(os.tmpdir(), "home-ok-"));
     const subDir = path.join(fakeHome, "work");
     fs.mkdirSync(subDir);
     const { baseToken } = await startServerWithSpawn(relayConfigDir, port, {

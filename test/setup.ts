@@ -5,6 +5,7 @@
  * profile (~50ms) across the test suite so the storage stack stays fast.
  */
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 
 process.env.PTY_RELAY_KDF_PROFILE = "interactive";
@@ -20,5 +21,5 @@ if (!process.env.PTY_RELAY_PASSPHRASE) {
 // directory. Without this, any test that reaches the pty daemon/client would
 // read/write the user's actual session state under ~/.local/state/pty.
 if (!process.env.PTY_SESSION_DIR) {
-  process.env.PTY_SESSION_DIR = fs.mkdtempSync(path.join("/tmp", "pty-relay-unit-"));
+  process.env.PTY_SESSION_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "pty-relay-unit-"));
 }
