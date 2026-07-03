@@ -53,7 +53,7 @@ export async function ls(
     if (json) {
       console.log(JSON.stringify([]));
     } else {
-      console.log("No known hosts.");
+      console.log("No known peers.");
       console.log("Connect to a daemon first:");
       console.log("  pty-relay connect <token-url>");
     }

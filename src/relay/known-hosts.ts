@@ -325,15 +325,47 @@ async function persist(hosts: KnownHost[], store: SecretStore): Promise<void> {
 export async function loadAllKnownHosts(
   store: SecretStore,
 ): Promise<KnownHost[]> {
+  const tagged = await loadAllKnownHostsWithSource(store);
+  return tagged.map((t) => t.host);
+}
+
+/** Peer origin as surfaced by `pty-relay peers --json`. `known-hosts`
+ *  means the encrypted store (`connect` / `add` / `server signin`
+ *  wrote it); `peers-file` means a declarative row in the peers file
+ *  that survived the merge in `loadAllKnownHostsWithSource`. */
+export type PeerSource = "known-hosts" | "peers-file";
+
+export interface PeerEntry {
+  host: KnownHost;
+  source: PeerSource;
+}
+
+/**
+ * Same merge behavior as `loadAllKnownHosts`, but tags each returned
+ * entry with its provenance so callers that need to distinguish
+ * imperative-vs-declarative rows (e.g. `pty-relay peers --json`)
+ * don't have to do the merge themselves.
+ *
+ * Encrypted-store entries WIN on label collisions — the operator
+ * explicitly saved them via `connect` / `add` / `server signin`, so
+ * an accidental peers-file line with the same label shouldn't shadow
+ * them.
+ */
+export async function loadAllKnownHostsWithSource(
+  store: SecretStore,
+): Promise<PeerEntry[]> {
   // Imported lazily so the encrypted-store-only path doesn't need to
   // pull in the peers-file module for write operations.
   const { loadPeersFile } = await import("./peers-file.ts");
   const stored = await loadKnownHosts(store);
   const fromFile = loadPeersFile();
-  if (fromFile.length === 0) return stored;
+  const merged: PeerEntry[] = stored.map((host) => ({
+    host,
+    source: "known-hosts" as const,
+  }));
+  if (fromFile.length === 0) return merged;
 
   const storedLabels = new Set(stored.map((h) => h.label));
-  const merged: KnownHost[] = [...stored];
   let shadowed = 0;
   let renamed = 0;
 
@@ -351,13 +383,16 @@ export async function loadAllKnownHosts(
     // entries that happen to share a label (rare but possible when
     // explicit labels are used).
     let label = candidate.label;
-    if (merged.some((h) => h.label === label)) {
+    if (merged.some((h) => h.host.label === label)) {
       let n = 2;
-      while (merged.some((h) => h.label === `${candidate.label}-${n}`)) n++;
+      while (merged.some((h) => h.host.label === `${candidate.label}-${n}`)) n++;
       label = `${candidate.label}-${n}`;
       renamed++;
     }
-    merged.push({ ...candidate, label });
+    merged.push({
+      host: { ...candidate, label },
+      source: "peers-file",
+    });
   }
 
   log("hosts", "load merged", {

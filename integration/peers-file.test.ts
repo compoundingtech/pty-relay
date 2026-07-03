@@ -119,6 +119,52 @@ function readCallLog(): string {
   return fs.readFileSync(path.join(fakeSshDir, "calls.log"), "utf-8");
 }
 
+describe("pty-relay peers subcommand", () => {
+  it("empty install prints a helpful hint", () => {
+    // Nuke any peers file the previous suite wrote.
+    try { fs.rmSync(peersFile); } catch {}
+    const result = runCli(["peers", "--config-dir", configDir]);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain("No known peers");
+    expect(result.stdout).toContain("pty-relay add");
+  });
+
+  it("--json emits {label, url, source, kind} rows for peers-file entries", () => {
+    fs.writeFileSync(peersFile, "ssh://you@web7  json-web\n");
+    const result = runCli(["peers", "--config-dir", configDir, "--json"]);
+    expect(result.status).toBe(0);
+    const parsed = JSON.parse(result.stdout) as Array<{
+      label: string;
+      url: string;
+      source: string;
+      kind: string;
+    }>;
+    expect(parsed).toEqual([
+      {
+        label: "json-web",
+        url: "ssh://you@web7",
+        source: "peers-file",
+        kind: "ssh",
+      },
+    ]);
+  });
+
+  it("plain output aligns URL column and doesn't fan out (no ssh calls)", () => {
+    fs.writeFileSync(peersFile, "ssh://a@short  a\nssh://b@longer-label  b-longer\n");
+    clearCallLog();
+    const result = runCli(["peers", "--config-dir", configDir]);
+    expect(result.status).toBe(0);
+    const lines = result.stdout.trim().split("\n");
+    expect(lines).toHaveLength(2);
+    // Both URL starts should land at the same column (padding lines
+    // up to the widest label).
+    const urlCol = (l: string) => l.indexOf("ssh://");
+    expect(urlCol(lines[0])).toBe(urlCol(lines[1]));
+    // No session fanout — the fake ssh's calls.log must be empty.
+    expect(readCallLog()).toBe("");
+  });
+});
+
 describe("peers file — declarative provisioning", () => {
   it("ls discovers a peer dropped into the peers file (zero commands run)", () => {
     fs.writeFileSync(peersFile, "ssh://nathan@web1.example.com  prod-web\n");
