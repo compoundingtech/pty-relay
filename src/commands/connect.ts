@@ -14,7 +14,11 @@ import type { ParsedToken } from "../crypto/index.ts";
 import { ClientRelayConnection } from "../terminal/client-connection.ts";
 import { Terminal } from "../terminal/terminal.ts";
 import { ChannelConnection } from "../relay/channel-connection.ts";
-import { saveKnownHost } from "../relay/known-hosts.ts";
+import {
+  loadAllKnownHosts,
+  isSshHost,
+  saveKnownHost,
+} from "../relay/known-hosts.ts";
 import { loadPsk } from "../relay/psk.ts";
 import type { SecretStore } from "../storage/secret-store.ts";
 import { openSecretStore } from "../storage/bootstrap.ts";
@@ -52,18 +56,91 @@ export async function connect(
 ): Promise<void> {
   await ready();
   log("cli", "connect begin", {
-    target: looksLikeTokenUrl(tokenUrlOrLabel) ? "token-url" : tokenUrlOrLabel,
+    target: looksLikeTokenUrl(tokenUrlOrLabel)
+      ? "token-url"
+      : tokenUrlOrLabel.startsWith("ssh://")
+        ? "ssh-url"
+        : tokenUrlOrLabel,
     spawn: options?.spawn,
     cwd: options?.cwd,
     session: options?.session,
     hasTags: !!(options?.tags && Object.keys(options.tags).length > 0),
   });
 
-  // Dispatch: a raw http(s):// URL is a self-hosted token URL and goes
-  // through the existing flow. Anything else is treated as a known-hosts
-  // label — we look it up and, if public-mode, hand off to the public
-  // attach path. Labels are a recent addition for public-relay; the
-  // self-hosted UX still keys on paste-in token URLs.
+  // Dispatch order:
+  //   ssh://…                → resolve to a known ssh peer by authority
+  //                            (userHost + port), pick session from the
+  //                            URL path or from --session/--spawn
+  //   http(s)://…            → self-hosted token URL (existing flow)
+  //   anything else          → known-hosts label lookup (public / self /
+  //                            ssh via resolveHost)
+  if (tokenUrlOrLabel.startsWith("ssh://")) {
+    const { store, passphrase } = await openSecretStore(options?.configDir, {
+      interactive: true,
+      passphraseFile: options?.passphraseFile,
+    });
+    if (passphrase && !process.env.PTY_RELAY_PASSPHRASE) {
+      process.env.PTY_RELAY_PASSPHRASE = passphrase;
+    }
+    const { splitSshUrlAndSession, parseSshUrl, attachSshRemoteSession } =
+      await import("../relay/transport-ssh.ts");
+
+    let authorityUrl: string;
+    let urlSession: string | undefined;
+    try {
+      ({ authorityUrl, session: urlSession } =
+        splitSshUrlAndSession(tokenUrlOrLabel));
+    } catch (e) {
+      console.error((e as Error).message);
+      process.exit(1);
+    }
+
+    // Reject an ambiguous invocation where the caller supplied the
+    // session in TWO places. Mirrors how token URLs handle a session
+    // in the fragment + a --session flag.
+    const flagSession = options?.spawn ?? options?.session;
+    if (urlSession && flagSession) {
+      console.error(
+        `Ambiguous: session "${urlSession}" in URL and "${flagSession}" via ` +
+          `${options?.spawn ? "--spawn" : "--session"}. Provide only one.`,
+      );
+      process.exit(1);
+    }
+    const sessionName = urlSession ?? flagSession;
+    if (!sessionName) {
+      console.error(
+        `connect to ssh peer "${authorityUrl}" needs a session name. ` +
+          `Append \`/<name>\` to the URL or pass \`--session <name>\`.`,
+      );
+      process.exit(1);
+    }
+
+    // Look up by authority (userHost + port), NOT by label — the caller
+    // typed the URL, and it may not literally equal any stored sshUrl
+    // string even when they identify the same peer (implicit port 22 vs
+    // `:22`, for example).
+    const wantAuth = parseSshUrl(authorityUrl);
+    const hosts = await loadAllKnownHosts(store);
+    const match = hosts.find((h) => {
+      if (!isSshHost(h)) return false;
+      try {
+        const auth = parseSshUrl(h.sshUrl);
+        return auth.userHost === wantAuth.userHost && auth.port === wantAuth.port;
+      } catch {
+        return false;
+      }
+    });
+    if (!match) {
+      console.error(
+        `No known ssh peer matching ${authorityUrl}. ` +
+          `Run \`pty-relay add ${authorityUrl}\` to register it.`,
+      );
+      process.exit(1);
+    }
+    const code = await attachSshRemoteSession(match.sshUrl!, sessionName);
+    process.exit(code ?? 0);
+  }
+
   if (!looksLikeTokenUrl(tokenUrlOrLabel)) {
     const { store, passphrase } = await openSecretStore(options?.configDir, {
       interactive: true,

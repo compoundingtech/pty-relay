@@ -118,6 +118,50 @@ export function looksLikeSshUrl(s: string): boolean {
 }
 
 /**
+ * Split an `ssh://[user@]host[:port][/session]` string into its
+ * authority-only URL (the part `parseSshUrl` accepts) and, if
+ * present, the trailing session segment.
+ *
+ * `parseSshUrl` deliberately rejects paths — sshUrl entries in
+ * known-hosts are authority-only by contract. But CLI callers hand
+ * us the URL in "full address" form with the session name in the
+ * path (mirroring how the `pty` TUI stitches attach-remote URLs
+ * together), so connect / peek / send / etc. need to peel the
+ * session off before doing the known-hosts lookup.
+ *
+ * Empty trailing slash is allowed and treated as "no session":
+ * `ssh://host/` → { authorityUrl: "ssh://host", session: undefined }
+ *
+ * A path with more than one segment is an error — we don't know what
+ * to do with `ssh://host/foo/bar` and would rather fail loudly than
+ * silently discard `bar`.
+ */
+export function splitSshUrlAndSession(input: string): {
+  authorityUrl: string;
+  session?: string;
+} {
+  if (typeof input !== "string" || !input.startsWith("ssh://")) {
+    throw new Error(`not an ssh URL: ${input}`);
+  }
+  const rest = input.slice("ssh://".length);
+  const slashIdx = rest.indexOf("/");
+  if (slashIdx === -1) {
+    return { authorityUrl: input };
+  }
+  const authority = rest.slice(0, slashIdx);
+  const path = rest.slice(slashIdx + 1);
+  if (path.length === 0) {
+    return { authorityUrl: `ssh://${authority}` };
+  }
+  if (path.includes("/")) {
+    throw new Error(
+      `ssh URL path must be a single session name (got: ${input})`,
+    );
+  }
+  return { authorityUrl: `ssh://${authority}`, session: path };
+}
+
+/**
  * Default options applied to every `ssh` invocation. Centralized so a
  * future caller can override via a per-call options arg without each
  * subcommand redefining them.
