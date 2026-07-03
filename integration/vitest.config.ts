@@ -9,5 +9,6 @@ export default defineConfig({
     include: ["integration/**/*.test.ts"],
     exclude: ["**/*.spec.ts", "node_modules/**"],
     setupFiles: ["./integration/setup.ts"],
+    globalSetup: ["./test/setup/vitest-global.ts"],
   },
 });
