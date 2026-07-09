@@ -6,7 +6,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/myobie/pty-relay"
+    "url": "https://github.com/compoundingtech/pty-relay"
   },
   "engines": {
     "node": ">=22"
