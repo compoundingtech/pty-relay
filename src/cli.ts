@@ -1349,5 +1349,19 @@ main()
       error: err?.message ?? String(err),
     });
     console.error("Fatal:", err.message || err);
+    // A fresh dev checkout hits this when the linked @myobie/pty has no
+    // built dist/ (its dist/ is gitignored and `npm install` does not
+    // build it). Turn the raw module-resolution error into an actionable
+    // hint instead of a dead end.
+    if (
+      err?.code === "ERR_MODULE_NOT_FOUND" &&
+      /@myobie\/pty\b/.test(err?.message ?? "")
+    ) {
+      console.error(
+        "\nThe linked @myobie/pty has no built dist/. In your pty checkout run:\n" +
+          "  npm install && npm run build\n" +
+          "then re-link from the pty-relay dir:  npm link ../pty",
+      );
+    }
     process.exit(1);
   });
