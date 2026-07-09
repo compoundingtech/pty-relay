@@ -532,7 +532,7 @@ function translateSshError(err: unknown, sshUrl: string): Error {
   if (stderr.includes("command not found") || stderr.includes("not found")) {
     return new Error(
       `${sshUrl}: pty is not on the remote PATH. Install pty there ` +
-        `(see https://github.com/myobie/pty) and re-try.`,
+        `(see https://github.com/compoundingtech/pty) and re-try.`,
     );
   }
   if (stderr.includes("could not resolve hostname")) {

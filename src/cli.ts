@@ -123,8 +123,8 @@ Options:
                              reconciles against server output as it
                              arrives; auto-disabled in alternate-screen
                              mode (vim, htop). OFF by default. Beta —
-                             feedback welcome at github.com/myobie/
-                             pty-relay/issues/12.
+                             feedback welcome at
+                             github.com/compoundingtech/pty-relay/issues/12.
   --skip-osc8-confirm       Skip the click-confirmation prompt for
                              OSC 8 hyperlinks in the web terminal —
                              clicks open the URL directly in a new
