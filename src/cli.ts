@@ -738,9 +738,25 @@ async function main(): Promise<void> {
       try {
         const pkgPath = path.resolve(import.meta.dirname, "../package.json");
         const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
-        console.log(`pty-relay ${pkg.version}`);
+        // Standard CLI format: <semver>+<short-sha>. The sha is appended
+        // only when run from a source checkout — resolve git relative to
+        // this file (not the user's cwd) so it reflects the pty-relay
+        // repo. A published npm install isn't a git repo, so git fails
+        // and the plain semver prints.
+        let sha = "";
+        try {
+          const { execFileSync } = await import("node:child_process");
+          sha = execFileSync("git", ["rev-parse", "--short", "HEAD"], {
+            cwd: import.meta.dirname,
+            stdio: ["ignore", "pipe", "ignore"],
+            timeout: 1000,
+          })
+            .toString()
+            .trim();
+        } catch {}
+        console.log(sha ? `${pkg.version}+${sha}` : pkg.version);
       } catch {
-        console.log("pty-relay (version unknown)");
+        console.log("unknown");
       }
       process.exit(0);
       break;

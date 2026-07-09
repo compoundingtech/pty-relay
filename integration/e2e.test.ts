@@ -749,7 +749,7 @@ describe("version command", () => {
       { encoding: "utf-8", timeout: 5000 }
     );
     expect(result.status).toBe(0);
-    expect(result.stdout).toMatch(/^pty-relay \d+\.\d+\.\d+/);
+    expect(result.stdout.trim()).toMatch(/^\d+\.\d+\.\d+(\+[0-9a-f]+)?$/);
   });
 
   it("'version' subcommand also works", () => {
@@ -759,7 +759,7 @@ describe("version command", () => {
       { encoding: "utf-8", timeout: 5000 }
     );
     expect(result.status).toBe(0);
-    expect(result.stdout).toMatch(/^pty-relay \d+\.\d+\.\d+/);
+    expect(result.stdout.trim()).toMatch(/^\d+\.\d+\.\d+(\+[0-9a-f]+)?$/);
   });
 });
 

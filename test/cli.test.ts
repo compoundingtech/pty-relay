@@ -112,21 +112,22 @@ describe("CLI", () => {
     expect(stdout).toContain("reset");
   });
 
-  it("--version prints the package version and exits 0", () => {
+  it("--version prints <semver>+<sha> (no name prefix) and exits 0", () => {
     const { stdout, exitCode } = runCli(["--version"]);
-    expect(stdout).toMatch(/pty-relay \d+\.\d+\.\d+/);
+    // Standard format: bare semver, optionally +<short-sha> from a checkout.
+    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+(\+[0-9a-f]+)?$/);
     expect(exitCode).toBe(0);
   });
 
   it("-v is an alias for --version", () => {
     const { stdout, exitCode } = runCli(["-v"]);
-    expect(stdout).toMatch(/pty-relay \d+\.\d+\.\d+/);
+    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+(\+[0-9a-f]+)?$/);
     expect(exitCode).toBe(0);
   });
 
   it("version subcommand works the same as --version", () => {
     const { stdout, exitCode } = runCli(["version"]);
-    expect(stdout).toMatch(/pty-relay \d+\.\d+\.\d+/);
+    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+(\+[0-9a-f]+)?$/);
     expect(exitCode).toBe(0);
   });
 
