@@ -23,8 +23,10 @@ only sees opaque binary frames.
 
 ## Install
 
-Requires [pty](https://github.com/compoundingtech/pty) (>= 0.10.0) and Node.js
-22+ for native TypeScript execution.
+Requires [pty](https://github.com/compoundingtech/pty) (>= 0.10.0) and
+Node.js 22.18+ or 23.6+ — a release that runs TypeScript natively
+without a flag (type stripping is on by default from Node 23.6, and
+backported to the 22 LTS line in 22.18).
 
 ```bash
 npm install -g @myobie/pty @myobie/pty-relay
@@ -43,7 +45,7 @@ it does not print secrets.
 
 ### System requirements
 
-- **Node.js 22+**
+- **Node.js 22.18+ or 23.6+** (native TypeScript, no flag)
 - **macOS, Linux, or Windows**
 - **A working system keyring** for the zero-prompt experience:
   - macOS: Keychain (always available)
@@ -412,14 +414,38 @@ has to re-approve, every public-relay device has to re-enroll.
 ### Working on pty-relay itself
 
 ```bash
+# Clone pty and pty-relay as siblings.
 git clone https://github.com/compoundingtech/pty
 git clone https://github.com/compoundingtech/pty-relay
-(cd pty && npm install && npm link)
-(cd pty-relay && npm install && npm link @myobie/pty && npm link)
+
+# Build pty FIRST. pty-relay imports pty's compiled output
+# (@myobie/pty/client), and pty's dist/ is gitignored — `npm install`
+# alone does not build it. Skip this and pty-relay fails at runtime with
+# `ERR_MODULE_NOT_FOUND: .../@myobie/pty/dist/client-api.js`.
+(cd pty && npm install && npm run build)
+
+# Install pty-relay and link it against your local pty checkout.
+(cd pty-relay && npm install && npm link ../pty)
 ```
 
-The `npm link` step resolves `@myobie/pty` from your local checkout so
-changes to either repo are reflected immediately.
+`npm link ../pty` points `@myobie/pty` at your local checkout, so
+changes to either repo are reflected immediately. Re-run `npm run build`
+in `pty` whenever you change its sources.
+
+pty-relay itself has **no build step and no `bin/` wrapper** — it runs
+its TypeScript sources directly via Node's native type stripping, and
+the entry point is `src/cli.ts`. Run and verify it any of these ways:
+
+```bash
+node src/cli.ts doctor      # from the pty-relay checkout
+./src/cli.ts doctor         # via the shebang
+npm link && pty-relay doctor  # also puts `pty-relay` on your PATH
+```
+
+Use `doctor` (not `--version`) as the smoke test: it loads the
+`@myobie/pty` import, so it actually proves the link is wired up.
+`--version` prints before that import loads and succeeds even when pty
+is unbuilt.
 
 ### Layout
 
