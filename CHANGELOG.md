@@ -89,7 +89,7 @@ Pre-1.0 we reserve the right to break on minor bumps.
 - Strict single-role keys, daemon-pinned preauths, revocation via
   close code 4001.
 - Credentials encrypted at rest (system keychain or passphrase).
-- Depends on [pty](https://github.com/myobie/pty) >= 0.10.0 and
+- Depends on [pty](https://github.com/compoundingtech/pty) >= 0.10.0 and
   Node.js 22+.
 
-[Unreleased]: https://github.com/myobie/pty-relay/commits/main
+[Unreleased]: https://github.com/compoundingtech/pty-relay/commits/main

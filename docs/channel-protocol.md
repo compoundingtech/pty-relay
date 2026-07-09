@@ -1,7 +1,7 @@
 # Channel-multiplexed relay protocol (v2)
 
 > **Status:** Design proposal — implementation tracked in
-> [`feat/channel-mux`](https://github.com/myobie/pty-relay/tree/feat/channel-mux).
+> [`feat/channel-mux`](https://github.com/compoundingtech/pty-relay/tree/feat/channel-mux).
 > Not yet on `main`. Cite this doc when reviewing the implementation;
 > divergences land here first.
 

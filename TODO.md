@@ -7,7 +7,7 @@ we start widening the surface.
 ## Per-PTY public sharing with read-only / write modes
 
 **Originally:** [#11 — Support publicly sharing individual PTYs with
-read-only or write access](https://github.com/myobie/pty-relay/issues/11)
+read-only or write access](https://github.com/compoundingtech/pty-relay/issues/11)
 (closed in favor of this entry).
 
 **Idea.** Today, access in pty-relay is modeled per *daemon*: once a

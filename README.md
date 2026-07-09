@@ -4,7 +4,7 @@
 > formats may change without notice. Do not rely on it for anything you
 > can't recreate.
 
-Remote access to [pty](https://github.com/myobie/pty) sessions over an
+Remote access to [pty](https://github.com/compoundingtech/pty) sessions over an
 end-to-end encrypted WebSocket tunnel. Connect from a browser, phone, or
 another terminal. Two modes:
 
@@ -23,7 +23,7 @@ only sees opaque binary frames.
 
 ## Install
 
-Requires [pty](https://github.com/myobie/pty) (>= 0.10.0) and Node.js
+Requires [pty](https://github.com/compoundingtech/pty) (>= 0.10.0) and Node.js
 22+ for native TypeScript execution.
 
 ```bash
@@ -82,7 +82,7 @@ sessions you've already started with `pty run`).
 pty-relay local start -d --tailscale --auto-approve --allow-new-sessions
 ```
 
-Wraps the relay in a detached [pty](https://github.com/myobie/pty)
+Wraps the relay in a detached [pty](https://github.com/compoundingtech/pty)
 session and prints the token URL. Reattach with
 `pty attach relay-daemon`, stop with `pty kill relay-daemon`.
 
@@ -412,8 +412,8 @@ has to re-approve, every public-relay device has to re-enroll.
 ### Working on pty-relay itself
 
 ```bash
-git clone https://github.com/myobie/pty
-git clone https://github.com/myobie/pty-relay
+git clone https://github.com/compoundingtech/pty
+git clone https://github.com/compoundingtech/pty-relay
 (cd pty && npm install && npm link)
 (cd pty-relay && npm install && npm link @myobie/pty && npm link)
 ```
