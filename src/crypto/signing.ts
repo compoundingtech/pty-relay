@@ -70,7 +70,7 @@ export function sha256Hex(bin: string | Uint8Array): string {
  *  - Values URL-encoded with `encodeURIComponent` (matches the
  *    Elixir reference). Keys left verbatim because the relay only
  *    uses ASCII-safe keys; changing that on either side must be a
- *    coordinated protocol bump.
+ *    synchronized protocol bump.
  */
 export function canonicalQuery(params: Record<string, string>): string {
   return Object.entries(params)
