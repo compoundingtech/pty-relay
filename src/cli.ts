@@ -87,6 +87,7 @@ Commands:
   server --help             Show public-relay subcommands
   client signin --email <addr>  Register this device as an account-wide client
   client --help             Show client subcommands
+  completions <shell>       Print a shell completion script (bash|fish|zsh)
   version                   Print the pty-relay version
 
 Options:
@@ -243,12 +244,14 @@ async function main(): Promise<void> {
   // "--help" deeper in the argv (e.g. `pty-relay send h s "see --help"`)
   // isn't swallowed.
   // Namespaced commands like `server` handle their own subcommand help;
-  // short-circuiting here would hide per-subcommand usage.
+  // short-circuiting here would hide per-subcommand usage. `completions`
+  // is excluded for the same reason — it documents its own shell list.
   if (
     command &&
     command !== "server" &&
     command !== "client" &&
     command !== "local" &&
+    command !== "completions" &&
     (args[1] === "--help" || args[1] === "-h")
   ) {
     usage();
@@ -781,6 +784,14 @@ async function main(): Promise<void> {
 
     case "local": {
       await dispatchLocal();
+      break;
+    }
+
+    case "completions": {
+      const { cmdCompletions } = await import("./completions.ts");
+      // Set exitCode rather than process.exit() so the generated script is
+      // fully flushed when stdout is a pipe or a redirect.
+      process.exitCode = cmdCompletions(args.slice(1));
       break;
     }
 
