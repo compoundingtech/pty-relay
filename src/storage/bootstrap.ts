@@ -9,7 +9,7 @@ import { randomSalt, type KdfProfile } from "../crypto/aead.ts";
 import { b64encode, b64decode } from "../crypto/envelope.ts";
 import { log, now, sinceMs } from "../log.ts";
 
-import { getSessionDir } from "@myobie/pty/client";
+import { getSessionDir } from "@compoundingtech/pty/client";
 
 const MARKER_FILENAME = "storage.json";
 

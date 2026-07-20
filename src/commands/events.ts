@@ -1,4 +1,4 @@
-import type { EventRecord } from "@myobie/pty/client";
+import type { EventRecord } from "@compoundingtech/pty/client";
 import { ready } from "../crypto/index.ts";
 import {
   subscribeRemoteEvents,

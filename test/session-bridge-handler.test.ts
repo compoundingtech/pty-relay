@@ -5,7 +5,7 @@ import type { ChannelHandler } from "../src/relay/channel-registry.ts";
 /**
  * Surface-level contract tests for the v2 SessionBridge port. The
  * happy-path attach + bridging flow is covered by the integration suite
- * (it needs a real `@myobie/pty` Unix socket); these tests pin the
+ * (it needs a real `@compoundingtech/pty` Unix socket); these tests pin the
  * channel-mux interface so a future refactor doesn't drift the shape.
  */
 

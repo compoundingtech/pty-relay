@@ -3,8 +3,8 @@ import { Buffer } from "node:buffer";
 import {
   encodeAttach,
   encodeDetach,
-} from "@myobie/pty/protocol";
-import { getSocketPath } from "@myobie/pty/client";
+} from "@compoundingtech/pty/protocol";
+import { getSocketPath } from "@compoundingtech/pty/client";
 import type { ChannelHandler } from "./channel-registry.ts";
 import { log, now, sinceMs } from "../log.ts";
 

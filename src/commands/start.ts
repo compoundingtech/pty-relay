@@ -11,7 +11,7 @@ import { ChannelConnection } from "../relay/channel-connection.ts";
 import { handleChannelOpenControl } from "../relay/channel-open-handler.ts";
 import { ClientTracker } from "../relay/client-tracker.ts";
 import { loadPsk } from "../relay/psk.ts";
-import { EventFollower } from "@myobie/pty/client";
+import { EventFollower } from "@compoundingtech/pty/client";
 import { execFileSync, execSync, spawn as childSpawn } from "node:child_process";
 import type { Config } from "../crypto/index.ts";
 import {

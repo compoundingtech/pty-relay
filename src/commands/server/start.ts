@@ -22,7 +22,7 @@ import { ClientTracker } from "../../relay/client-tracker.ts";
 import {
   buildPublicDaemonUrl,
 } from "../../relay/public-server-url.ts";
-import { EventFollower } from "@myobie/pty/client";
+import { EventFollower } from "@compoundingtech/pty/client";
 import { signMinterPayload } from "./mint-protocol.ts";
 import {
   handleSessionControlMessage,

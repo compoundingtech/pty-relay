@@ -20,7 +20,7 @@ import {
   CONTROL_CHANNEL_ID,
   FRAME_TYPE,
 } from "./channel-framing.ts";
-import type { EventRecord } from "@myobie/pty/client";
+import type { EventRecord } from "@compoundingtech/pty/client";
 import type { PublicTarget, RemoteSession } from "./relay-client.ts";
 import WebSocket from "ws";
 import { log, redactAuthQuery } from "../log.ts";

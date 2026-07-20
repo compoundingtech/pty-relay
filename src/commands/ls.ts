@@ -1,4 +1,4 @@
-import { matchesAllTags } from "@myobie/pty/client";
+import { matchesAllTags } from "@compoundingtech/pty/client";
 import { ready } from "../crypto/index.ts";
 import {
   loadAllKnownHosts,

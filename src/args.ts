@@ -1,5 +1,5 @@
 /** Extract all `--tag key=value` pairs from argv (repeatable).
- *  Matches the shape of `@myobie/pty/client`'s `extractFilterTags`:
+ *  Matches the shape of `@compoundingtech/pty/client`'s `extractFilterTags`:
  *  same `key=value` contract, but for `--tag` (which `pty run` also uses).
  *  Exits the process with code 1 on a malformed pair so the user sees
  *  the error instead of the daemon silently dropping bad input. */

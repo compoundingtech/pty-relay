@@ -23,21 +23,38 @@ only sees opaque binary frames.
 
 ## Install
 
-Requires [pty](https://github.com/compoundingtech/pty) (>= 0.10.0) and
-Node.js 22.18+ or 23.6+ — a release that runs TypeScript natively
-without a flag (type stripping is on by default from Node 23.6, and
-backported to the 22 LTS line in 22.18).
+[pty](https://github.com/compoundingtech/pty) and pty-relay are private
+packages — not published to npm. pty-relay depends on pty as a local
+sibling checkout via a `file:../pty` dependency, and runs its TypeScript
+sources directly on **Node.js 22.18+ or 23.6+** — a release that strips
+types natively without a flag (default from Node 23.6, backported to the
+22.18 LTS line), so pty-relay itself has no build step.
+
+Adopt it standalone by cloning both repos side by side:
 
 ```bash
-npm install -g @myobie/pty @myobie/pty-relay
+# 1. Clone pty and pty-relay as siblings — pty-relay resolves `file:../pty`.
+git clone https://github.com/compoundingtech/pty
+git clone https://github.com/compoundingtech/pty-relay
+
+# 2. Build pty first: pty-relay imports pty's compiled dist/, which is
+#    gitignored, so `npm install` alone does not produce it.
+(cd pty && npm install && npm run build)
+
+# 3. Install pty-relay. The `file:../pty` dependency links your sibling
+#    pty checkout into node_modules automatically — no `npm link` needed.
+(cd pty-relay && npm install)
 ```
 
-Verify:
+Verify (from the pty-relay checkout):
 
 ```bash
-pty-relay --version
-pty-relay doctor
+node src/cli.ts --version   # <semver>+<short-sha>
+node src/cli.ts doctor      # loads the @compoundingtech/pty import — proves the wiring
 ```
+
+Optionally put `pty-relay` on your PATH: `(cd pty-relay && npm link)`,
+then run `pty-relay --version` / `pty-relay doctor`.
 
 `pty-relay doctor` prints a diagnostic report (Node version, OS,
 keychain status, external tools) safe to share when troubleshooting —
@@ -419,18 +436,19 @@ git clone https://github.com/compoundingtech/pty
 git clone https://github.com/compoundingtech/pty-relay
 
 # Build pty FIRST. pty-relay imports pty's compiled output
-# (@myobie/pty/client), and pty's dist/ is gitignored — `npm install`
+# (@compoundingtech/pty/client), and pty's dist/ is gitignored — `npm install`
 # alone does not build it. Skip this and pty-relay fails at runtime with
-# `ERR_MODULE_NOT_FOUND: .../@myobie/pty/dist/client-api.js`.
+# `ERR_MODULE_NOT_FOUND: .../@compoundingtech/pty/dist/client-api.js`.
 (cd pty && npm install && npm run build)
 
-# Install pty-relay and link it against your local pty checkout.
-(cd pty-relay && npm install && npm link ../pty)
+# Install pty-relay. The `file:../pty` dependency links your sibling pty
+# checkout into node_modules automatically — no `npm link` needed.
+(cd pty-relay && npm install)
 ```
 
-`npm link ../pty` points `@myobie/pty` at your local checkout, so
-changes to either repo are reflected immediately. Re-run `npm run build`
-in `pty` whenever you change its sources.
+Because `@compoundingtech/pty` resolves to your local `../pty` checkout,
+changes to either repo are picked up immediately — just re-run
+`npm run build` in `pty` whenever you change its sources.
 
 pty-relay itself has **no build step and no `bin/` wrapper** — it runs
 its TypeScript sources directly via Node's native type stripping, and
@@ -443,7 +461,7 @@ npm link && pty-relay doctor  # also puts `pty-relay` on your PATH
 ```
 
 Use `doctor` (not `--version`) as the smoke test: it loads the
-`@myobie/pty` import, so it actually proves the link is wired up.
+`@compoundingtech/pty` import, so it actually proves the link is wired up.
 `--version` prints before that import loads and succeeds even when pty
 is unbuilt.
 

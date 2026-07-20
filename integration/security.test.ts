@@ -9,7 +9,7 @@ import {
   getPort,
   type TestContext,
 } from "./helpers/index.ts";
-import { getSession } from "@myobie/pty/client";
+import { getSession } from "@compoundingtech/pty/client";
 import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";

@@ -6,9 +6,9 @@ import {
   encodeData,
   encodeResize,
   encodeDetach,
-} from "@myobie/pty/protocol";
-import type { Packet } from "@myobie/pty/protocol";
-import { TERMINAL_SANITIZE } from "@myobie/pty/client";
+} from "@compoundingtech/pty/protocol";
+import type { Packet } from "@compoundingtech/pty/protocol";
+import { TERMINAL_SANITIZE } from "@compoundingtech/pty/client";
 import { log } from "../log.ts";
 
 const CTRL_BACKSLASH = 0x1c;

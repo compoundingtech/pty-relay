@@ -6,14 +6,14 @@ import {
   getPort,
   type TestContext,
 } from "./helpers/index.ts";
-import { getSession, updateTags } from "@myobie/pty/client";
+import { getSession, updateTags } from "@compoundingtech/pty/client";
 import { saveKnownHost } from "../src/relay/known-hosts.ts";
 import { openSecretStore } from "../src/storage/bootstrap.ts";
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import * as path from "node:path";
 
 // Tests in this file spawn pty sessions via the external `pty` CLI rather
-// than Session.server from @myobie/pty/testing. Session.server runs a pty
+// than Session.server from @compoundingtech/pty/testing. Session.server runs a pty
 // server in-process, which interacts in subtle ways with a pty-relay daemon
 // that tries to peek into it via Unix socket — a situation that never
 // arises in production, since the pty daemon is always a separate process.

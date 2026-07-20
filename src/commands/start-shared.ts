@@ -7,7 +7,7 @@ import {
   updateTags,
   validateName,
   EventFollower,
-} from "@myobie/pty/client";
+} from "@compoundingtech/pty/client";
 import { execFileSync } from "node:child_process";
 import * as os from "node:os";
 import * as path from "node:path";

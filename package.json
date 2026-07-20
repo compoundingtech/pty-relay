@@ -1,5 +1,6 @@
 {
-  "name": "@myobie/pty-relay",
+  "name": "@compoundingtech/pty-relay",
+  "private": true,
   "version": "0.1.0",
   "description": "Remote access to pty sessions over an end-to-end encrypted WebSocket tunnel",
   "license": "MIT",
@@ -25,10 +26,8 @@
     "test:web": "npx playwright test --config integration/playwright.config.ts",
     "build:browser": "node browser/build.mjs"
   },
-  "peerDependencies": {
-    "@myobie/pty": ">=0.10.0"
-  },
   "dependencies": {
+    "@compoundingtech/pty": "file:../pty",
     "libsodium-wrappers-sumo": "^0.8.2",
     "ws": "^8.18.0"
   },

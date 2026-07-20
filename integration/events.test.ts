@@ -163,7 +163,7 @@ describe("events subscription", () => {
     const name = `tagged-${port}`;
     spawnPtySession(name);
     // Set tags AFTER spawn so the snapshot-read has the latest metadata.
-    const { updateTags } = await import("@myobie/pty/client");
+    const { updateTags } = await import("@compoundingtech/pty/client");
     updateTags(name, { role: "agent", project: "boom" });
 
     let snapshot: { name: string; tags?: Record<string, string> }[] | null = null;

@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import * as crypto from "node:crypto";
 import type { SecretStore } from "../storage/secret-store.ts";
-import { getSessionDir } from "@myobie/pty/client";
+import { getSessionDir } from "@compoundingtech/pty/client";
 import { log } from "../log.ts";
 
 export interface ClientToken {

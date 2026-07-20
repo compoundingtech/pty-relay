@@ -7,7 +7,7 @@
 
 This document specifies a successor to the v1 single-stream relay
 protocol. v1 carried exactly one logical stream over each Noise
-session — the bytes of a `@myobie/pty` packet stream attached to a
+session — the bytes of a `@compoundingtech/pty` packet stream attached to a
 specific session. v2 multiplexes many independent **channels** over the
 same Noise session and admits more than one **channel mode**, so a
 single client connection can interleave terminal I/O with non-PTY
@@ -234,7 +234,7 @@ The sender follows this with WS close.
 
 ### `pty` mode
 
-Carries a `@myobie/pty` session's packet stream — exactly what
+Carries a `@compoundingtech/pty` session's packet stream — exactly what
 `SessionBridge` already proxies in v1. The `DATA` frame's payload is
 the bytes of one pty packet (ATTACH/INPUT/OUTPUT/RESIZE/DETACH).
 

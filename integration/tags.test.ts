@@ -9,7 +9,7 @@ import {
   getPort,
   type TestContext,
 } from "./helpers/index.ts";
-import { getSession, setDisplayName, updateTags } from "@myobie/pty/client";
+import { getSession, setDisplayName, updateTags } from "@compoundingtech/pty/client";
 import { saveKnownHost } from "../src/relay/known-hosts.ts";
 import { openSecretStore } from "../src/storage/bootstrap.ts";
 import { parseToken } from "../src/crypto/token.ts";

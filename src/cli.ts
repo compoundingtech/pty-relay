@@ -348,7 +348,7 @@ async function main(): Promise<void> {
     case "list":
     case "ls": {
       const configDir = getFlag("--config-dir") ?? undefined;
-      const { extractFilterTags } = await import("@myobie/pty/client");
+      const { extractFilterTags } = await import("@compoundingtech/pty/client");
       const lsArgs = args.slice(1);
       const filterTags = extractFilterTags(lsArgs);
       const { ls } = await import("./commands/ls.ts");
@@ -448,7 +448,7 @@ async function main(): Promise<void> {
         // --seq values support key:name syntax — e.g. "key:return" resolves
         // to "\r". Defer to pty's `parseSeqValue` so behavior matches the
         // local `pty send` command exactly.
-        const { parseSeqValue } = await import("@myobie/pty/client");
+        const { parseSeqValue } = await import("@compoundingtech/pty/client");
         try {
           data = seqs.map((s) => parseSeqValue(s));
         } catch (err: any) {
@@ -1365,16 +1365,16 @@ main()
       error: err?.message ?? String(err),
     });
     console.error("Fatal:", err.message || err);
-    // A fresh dev checkout hits this when the linked @myobie/pty has no
+    // A fresh dev checkout hits this when the linked @compoundingtech/pty has no
     // built dist/ (its dist/ is gitignored and `npm install` does not
     // build it). Turn the raw module-resolution error into an actionable
     // hint instead of a dead end.
     if (
       err?.code === "ERR_MODULE_NOT_FOUND" &&
-      /@myobie\/pty\b/.test(err?.message ?? "")
+      /@compoundingtech\/pty\b/.test(err?.message ?? "")
     ) {
       console.error(
-        "\nThe linked @myobie/pty has no built dist/. In your pty checkout run:\n" +
+        "\nThe linked @compoundingtech/pty has no built dist/. In your pty checkout run:\n" +
           "  npm install && npm run build\n" +
           "then re-link from the pty-relay dir:  npm link ../pty",
       );
