@@ -14,5 +14,5 @@ pty.toml
 .resize-probe.mjs
 repro.mjs
 
-# Per-clone MCP config used by coord-mode agents
+# Per-clone MCP config used by smalltalk-mode agents
 .mcp.json

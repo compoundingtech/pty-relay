@@ -730,7 +730,7 @@ async function setupTailscale(port: number, config: Config): Promise<TailscaleSe
   //
   // Use the targeted `--https=443 off` form instead of `serve reset`:
   // reset wipes EVERY serve entry on the tailnet node, including ones
-  // owned by other apps (e.g. coord-web on :8443). `tailscale serve
+  // owned by other apps (e.g. smalltalk-web on :8443). `tailscale serve
   // <port>` is shorthand for "expose HTTPS on 443 -> localhost:<port>",
   // so the matching cleanup is the HTTPS port, not the local port.
   process.on("exit", () => {
