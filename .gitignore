@@ -3,6 +3,8 @@ dist/
 !browser/dist/
 *.tsbuildinfo
 test-results/
+result
+result-*
 .env*
 .claude/
 pty.toml
