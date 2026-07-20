@@ -109,6 +109,25 @@
         };
 
         checks = {
+          # The repo's own `tsc --noEmit`. It only passes once
+          # @compoundingtech/pty resolves, which is exactly what the built
+          # output provides — so run it against that rather than the raw src.
+          typecheck = pkgs.runCommand "pty-relay-typecheck" { } ''
+            export HOME=$(mktemp -d)
+            cp -r ${pty-relay}/lib/pty-relay tree
+            chmod -R u+w tree
+            cd tree
+            ${nodejs}/bin/node node_modules/typescript/bin/tsc --noEmit
+            touch $out
+          '';
+
+          # NOTE: the vitest suite is deliberately NOT a check. It runs
+          # green against this same built tree outside the sandbox, but under
+          # the nix sandbox test/daemon-runtime.test.ts hangs indefinitely
+          # (0/14, blocking session-list-view and terminal); the other 69/72
+          # files pass. Gating `npm test` needs that file made sandbox-safe
+          # first, so CI covers typecheck + the CLI smoke checks only.
+
           help = pkgs.runCommand "pty-relay-help" { } ''
             export HOME=$(mktemp -d)
             ${pty-relay}/bin/pty-relay --help > /dev/null
