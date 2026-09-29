@@ -39,7 +39,7 @@ export interface DaemonRuntime {
   /** Set when `--tailscale` was passed AND tailscale serve registration
    *  succeeded. Otherwise undefined. */
   tailscale?: {
-    /** Tailnet hostname, e.g. `silber.pancake-hake.ts.net`. */
+    /** Tailnet hostname, e.g. `example-host.example-tailnet.ts.net`. */
     hostname: string;
     /** Almost always 443 for the operator's tailnet serve config; left
      *  explicit so future non-443 setups slot in. */

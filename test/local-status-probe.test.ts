@@ -9,7 +9,7 @@ import { probeDaemon } from "../src/commands/local/status.ts";
  * Unit tests for `probeDaemon`'s dual-signal (PID alive + TCP port
  * listening). The full CLI shape of `pty-relay local status` is
  * exercised by the integration suite; here we just pin the probe's
- * logic since it's the load-bearing fix for Nathan's "stale pid
+ * logic since it's the load-bearing fix for the "stale pid
  * 12839 (process not found)" reading-it-wrong bug.
  */
 
@@ -75,7 +75,7 @@ describe("probeDaemon", () => {
     expect(probe.portListening).toBe(true);
   });
 
-  it("running:false, portListening:false when nothing's around (Nathan's clean-shutdown case)", async () => {
+  it("running:false, portListening:false when nothing's around (the clean-shutdown case)", async () => {
     const port = await pickUnusedPort();
     const probe = await probeDaemon(dir, port);
     expect(probe).toEqual({

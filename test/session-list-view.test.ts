@@ -51,7 +51,7 @@ afterEach(() => {
 
 describe("shortenCwd", () => {
   it("rewrites paths under /Users/<name>/ to ~/...", () => {
-    expect(shortenCwd("/Users/myobie/src/foo")).toBe("~/src/foo");
+    expect(shortenCwd("/Users/example/src/foo")).toBe("~/src/foo");
   });
 
   it("truncates absolute paths outside /Users with ellipsis + last 2 segments", () => {
@@ -138,7 +138,7 @@ describe("structure", () => {
   it("each row has all four columns with the right contents", () => {
     const c = mountContainer();
     const v = makeView(c);
-    v.update([{ name: "s", command: "bash", cwd: "/Users/me/x", tags: { env: "dev" } }]);
+    v.update([{ name: "s", command: "bash", cwd: "/Users/example/x", tags: { env: "dev" } }]);
     const row = c.querySelector(".session-rows .session-row");
     expect(row?.querySelector(".col-name")?.textContent).toBe("s");
     expect(row?.querySelector(".col-cmd")?.textContent).toBe("bash");
@@ -162,7 +162,7 @@ describe("structure", () => {
       {
         name: "<img src=x onerror=alert(1)>",
         command: "<script>alert(2)</script>",
-        cwd: "/Users/me/<x>",
+        cwd: "/Users/example/<x>",
         tags: { "<a>": "<b>" },
       },
     ]);
@@ -193,7 +193,7 @@ describe("filter", () => {
     const v = makeView(c);
     v.update([
       { name: "a", command: "claude --resume" },
-      { name: "b", cwd: "/Users/me/important-thing" },
+      { name: "b", cwd: "/Users/example/important-thing" },
       { name: "c", tags: { project: "the-thing" } },
     ]);
     setFilter(c, "thing");

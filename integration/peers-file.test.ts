@@ -167,7 +167,7 @@ describe("pty-relay peers subcommand", () => {
 
 describe("peers file — declarative provisioning", () => {
   it("ls discovers a peer dropped into the peers file (zero commands run)", () => {
-    fs.writeFileSync(peersFile, "ssh://nathan@web1.example.com  prod-web\n");
+    fs.writeFileSync(peersFile, "ssh://alex@web1.example.com  prod-web\n");
     clearCallLog();
     const result = runCli(["ls", "--config-dir", configDir, "--json"]);
     if (result.status !== 0) {
@@ -183,9 +183,9 @@ describe("peers file — declarative provisioning", () => {
     }>;
     expect(parsed).toHaveLength(1);
     expect(parsed[0].label).toBe("prod-web");
-    expect(parsed[0].url).toBe("ssh://nathan@web1.example.com");
+    expect(parsed[0].url).toBe("ssh://alex@web1.example.com");
     expect(parsed[0].sessions.map((s) => s.name)).toEqual(["work"]);
-    expect(readCallLog()).toContain("nathan@web1.example.com pty list --json");
+    expect(readCallLog()).toContain("alex@web1.example.com pty list --json");
   });
 
   it("supports a mixed ssh + https://#pk.secret peers file", () => {
@@ -322,7 +322,7 @@ describe("phase-2 ssh wiring — every subcommand routes through ssh", () => {
   });
 
   // Fix B: ssh://user@host/session URLs. The pty TUI's attach-remote
-  // path hands us a URL of this shape (Nathan reported the "No known
+  // path hands us a URL of this shape (the reported "No known
   // host" bug); the "URL is a complete address" mental model has to
   // work from either side of the seam.
   describe("ssh:// URL with session in the path", () => {

@@ -149,7 +149,7 @@ describe("ssh:// transport — pty-relay ls", () => {
       [
         CLI_ENTRY,
         "add",
-        "ssh://nathan@beta",
+        "ssh://alex@beta",
         "--label",
         "beta",
         "--config-dir",
@@ -170,12 +170,12 @@ describe("ssh:// transport — pty-relay ls", () => {
       console.log("add stdout:", result.stdout);
     }
     expect(result.status).toBe(0);
-    expect(result.stdout).toContain("Added beta → ssh://nathan@beta");
+    expect(result.stdout).toContain("Added beta → ssh://alex@beta");
     expect(result.stdout).toContain("ok (pty 1.2.3-fake)");
 
     // The probe used `pty --version`, not `pty list --json`.
     const calls = fs.readFileSync(path.join(fakeSshDir, "calls.log"), "utf-8");
-    expect(calls).toContain("nathan@beta pty --version");
+    expect(calls).toContain("alex@beta pty --version");
 
     // Now reading back via ls should see the new entry. We need the
     // fake to keep responding to `list --json` for the second
@@ -196,6 +196,6 @@ describe("ssh:// transport — pty-relay ls", () => {
     expect(ls.status).toBe(0);
     const parsed = JSON.parse(ls.stdout);
     expect(parsed[0].label).toBe("beta");
-    expect(parsed[0].url).toBe("ssh://nathan@beta");
+    expect(parsed[0].url).toBe("ssh://alex@beta");
   }, 30_000);
 });
