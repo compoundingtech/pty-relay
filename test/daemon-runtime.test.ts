@@ -116,23 +116,23 @@ describe("buildExternalTokenUrl", () => {
     const runtime: DaemonRuntime = {
       port: 8099,
       bind: "127.0.0.1",
-      tailscale: { hostname: "silber.ts.net", port: 443, scheme: "https" },
+      tailscale: { hostname: "example.ts.net", port: 443, scheme: "https" },
       startedAt: 0,
     };
     const url = buildExternalTokenUrl(runtime, pk, secret, fakeCreateToken);
     // Default https port → no port in the URL.
-    expect(url).toBe("proto://silber.ts.net#fakepk.fakesecret");
+    expect(url).toBe("proto://example.ts.net#fakepk.fakesecret");
   });
 
   it("includes the tailscale port when it's non-default", () => {
     const runtime: DaemonRuntime = {
       port: 8099,
       bind: "127.0.0.1",
-      tailscale: { hostname: "silber.ts.net", port: 8443, scheme: "https" },
+      tailscale: { hostname: "example.ts.net", port: 8443, scheme: "https" },
       startedAt: 0,
     };
     const url = buildExternalTokenUrl(runtime, pk, secret, fakeCreateToken);
-    expect(url).toBe("proto://silber.ts.net:8443#fakepk.fakesecret");
+    expect(url).toBe("proto://example.ts.net:8443#fakepk.fakesecret");
   });
 
   it("falls back to localhost:<port> when no tailscale", () => {

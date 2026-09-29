@@ -72,7 +72,7 @@ describe("parsePeersFile — line grammar", () => {
 
   it("auto-label strips user@ but keeps the bare hostname", () => {
     const hosts = parsePeersFile(
-      "ssh://nathan@beta.host\n",
+      "ssh://alex@beta.host\n",
       "/test/peers",
     );
     expect(hosts[0].label).toBe("beta.host");
@@ -181,22 +181,22 @@ describe("peersFileCandidates", () => {
   it("PTY_RELAY_PEERS_FILE is checked first", () => {
     process.env.PTY_RELAY_PEERS_FILE = "/explicit/path";
     process.env.XDG_CONFIG_HOME = "/xdg";
-    process.env.HOME = "/home/u";
+    process.env.HOME = "/home/example";
     const list = peersFileCandidates();
     expect(list[0]).toBe("/explicit/path");
   });
 
   it("XDG_CONFIG_HOME comes second when set", () => {
     process.env.XDG_CONFIG_HOME = "/xdg";
-    process.env.HOME = "/home/u";
+    process.env.HOME = "/home/example";
     const list = peersFileCandidates();
     expect(list).toContain("/xdg/pty-relay/peers");
   });
 
   it("falls back to ~/.config/pty-relay/peers when XDG isn't set", () => {
-    process.env.HOME = "/home/u";
+    process.env.HOME = "/home/example";
     const list = peersFileCandidates();
-    expect(list).toContain("/home/u/.config/pty-relay/peers");
+    expect(list).toContain("/home/example/.config/pty-relay/peers");
   });
 });
 

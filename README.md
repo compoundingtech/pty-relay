@@ -280,7 +280,7 @@ mutation — drop a file at the documented path and `ls`/`peek`/`send`/
 #   <url>  <label>            — peer with explicit label
 
 ssh://web1.example.com
-ssh://nathan@web2.example.com:2222     prod-web-2
+ssh://alex@web2.example.com:2222       prod-web-2
 ssh://db1.example.com                  primary-db
 
 # https://#pk.secret URLs work too (token-URL form from `pty-relay

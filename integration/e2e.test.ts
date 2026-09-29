@@ -1084,7 +1084,7 @@ describe("client approval", () => {
     await client.waitForText("approval-works", 5000);
 
     // The client sent a hello message after approval; the token's label
-    // should have been backfilled from it (e.g. "Silber.local (cli)").
+    // should have been backfilled from it (e.g. "example.local (cli)").
     // Give it a moment to persist.
     await new Promise((r) => setTimeout(r, 500));
     const afterData = await loadClients(await openStore(relayDir));

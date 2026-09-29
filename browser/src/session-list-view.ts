@@ -83,7 +83,7 @@ export function formatAge(iso: string | null | undefined, now: number = Date.now
  *  testability — its branches are non-trivial. */
 export function shortenCwd(cwd: string): string {
   // Best-effort: we don't get HOME from the daemon, so we hard-code
-  // the macOS pattern. If we ever need to support /home/<user> we'll
+  // the macOS pattern. If we ever need to support Linux home directories we'll
   // pass the prefix in from the caller.
   const home = "/Users/";
   if (cwd.startsWith(home)) {
